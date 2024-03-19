@@ -1,0 +1,67 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body {
+          height: 3000px;
+          overflow-x: hidden;
+        }
+      
+        .composited {
+      
+          width: 50px;
+          height: 50px;
+          background-color: red;
+          position: absolute;
+          left: 50px;
+          top: 400px;
+          /* will-change: transform; */
+          transform: translateZ(0);
+        }
+      
+        .overlap {
+          width: 500px;
+          height: 500px;
+          /* background-color: green; */
+          position: fixed;
+          left: 0px;
+          top: 0px;
+        }
+        .overlap-text{
+          width: 500px;
+          height: 500px;
+          overflow: scroll;
+        }
+      </style>
+</head>
+<body>
+    <div class="composited"></div>
+    <div class="overlap">
+      <p class="overlap-text">提升为合成层简单说来有以下几点好处：
+
+        合成层的位图，会交由 GPU 合成，比 CPU 处理要快
+        当需要 repaint 时，只需要 repaint 本身，不会影响到其他的层
+        对于 transform 和 opacity 效果，不会触发 layout 和 paint
+        利用合成层对于提升页面性能方面有很大的作用，因此我们也总结了一下几点优化建议。
+        合成层的好处是不会影响到其他元素的绘制，因此，为了减少动画元素对其他元素的影响，从而减少 paint，我们需要把动画效果中的元素提升为合成层。
+
+提升合成层的最好方式是使用 CSS 的 will-change 属性。从上一节合成层产生原因中，可以知道 will-change 设置为 opacity、transform、top、left、bottom、right 可以将元素提升为合成层。
+但需要注意的是，不要创建太多的渲染层。因为每创建一个新的渲染层，就意味着新的内存分配和更复杂的层的管理。之后我们会详细讨论。
+
+如果你已经把一个元素放到一个新的合成层里，那么可以使用 Timeline 来确认这么做是否真的改进了渲染性能。别盲目提升合成层，一定要分析其实际性能表现。
+看完上面的文章，你会发现提升合成层会达到更好的性能。这看上去非常诱人，但是问题是，创建一个新的合成层并不是免费的，它得消耗额外的内存和管理资源。实际上，在内存资源有限的设备上，合成层带来的性能改善，可能远远赶不上过多合成层开销给页面性能带来的负面影响。同时，由于每个渲染层的纹理都需要上传到 GPU 处理，因此我们还需要考虑 CPU 和 GPU 之间的带宽问题、以及有多大内存供 GPU 处理这些纹理的问题。
+
+对于合成层占用内存的问题，我们简单做了几个 demo 进行了验证。
+
+demo 1 和 demo 2 中，会创建 2000 个同样的 div 元素，不同的是 demo 2 中的元素通过 will-change 都提升为了合成层，而两个 demo 页面的内存消耗却有很明显的差别。
+
+
+        </p>
+    </div>
+</body>
+</html>
+
+
+  
+  
